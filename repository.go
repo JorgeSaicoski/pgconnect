@@ -47,12 +47,12 @@ func (r *Repository[T]) Delete(model *T) error {
 
 // Count counts records matching the given conditions
 func (r *Repository[T]) Count(count *int64, query interface{}, args ...interface{}) error {
-	db := r.db.DB
+	db := r.db // Use the wrapper directly, not the internal r.db.DB field
 	if query != nil {
-		db = db.Where(query, args...)
+		db = &DB{DB: db.DB.Where(query, args...)} // Wrap the new DB instance properly
 	}
 	var model T
-	return db.Model(&model).Count(count).Error
+	return db.DB.Model(&model).Count(count).Error
 }
 
 // Paginate retrieves records with pagination
