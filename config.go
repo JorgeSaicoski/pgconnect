@@ -1,5 +1,4 @@
 // Package pgconnect provides utilities for connecting to PostgreSQL
-// using GORM and integrating with Gin framework.
 package pgconnect
 
 import (
