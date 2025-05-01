@@ -60,3 +60,9 @@ func (r *Repository[T]) Paginate(result *[]T, page, pageSize int) error {
 	offset := (page - 1) * pageSize
 	return r.db.Offset(offset).Limit(pageSize).Find(result).Error
 }
+
+// PaginateWhere retrieves records matching conditions with pagination
+func (r *Repository[T]) PaginateWhere(result *[]T, page, pageSize int, query interface{}, args ...interface{}) error {
+	offset := (page - 1) * pageSize
+	return r.db.Where(query, args...).Offset(offset).Limit(pageSize).Find(result).Error
+}

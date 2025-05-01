@@ -211,16 +211,47 @@ page := 2
 pageSize := 15
 var activeUsers []User
 
-// Option 1: Using the repository's Paginate method
+//  Using the repository's Paginate method
 if err := userRepo.Paginate(&activeUsers, page, pageSize); err != nil {
     log.Printf("Pagination failed: %v", err)
 }
 
-// Option 2: Manual pagination with conditions using the underlying GORM DB
+// PaginateWhere combines filtering conditions with pagination for efficient retrieval
+// of subsets of data. It applies WHERE conditions before pagination to avoid 
+// retrieving all records when only specific ones are needed.
+
+// Using the repository's PaginateWhere method
+if err := userRepo.PaginateWhere(&activeUsers, page, pageSize, "status = ?", "active"); err != nil {
+    log.Printf("Pagination with filters failed: %v", err)
+}
+
+// Find non-completed tasks with pagination
+var pendingTasks []Task
+if err := taskRepo.PaginateWhere(&pendingTasks, page, pageSize, "status != ?", "completed"); err != nil {
+    log.Printf("Failed to paginate pending tasks: %v", err)
+}
+
+// Multiple conditions can be combined in the query
+var recentActiveTasks []Task
+if err := taskRepo.PaginateWhere(
+    &recentActiveTasks, 
+    page, 
+    pageSize, 
+    "status = ? AND created_at > ?", 
+    "active", 
+    time.Now().AddDate(0, 0, -7),
+); err != nil {
+    log.Printf("Filtered pagination failed: %v", err)
+}
+
+// Manual pagination with conditions (not recommended, use PaginateWhere instead)
 offset := (page - 1) * pageSize
 if err := db.Where("status = ?", "active").Offset(offset).Limit(pageSize).Find(&activeUsers).Error; err != nil {
-    log.Printf("Pagination failed: %v", err)
+    log.Printf("Manual pagination failed: %v", err)
 }
+
+
+
 ```
 
 ## Integration with Gin
