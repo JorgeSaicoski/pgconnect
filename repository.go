@@ -45,6 +45,12 @@ func (r *Repository[T]) Delete(model *T) error {
 	return r.db.Delete(model).Error
 }
 
+// DeleteWhere deletes records matching the given conditions
+func (r *Repository[T]) DeleteWhere(query interface{}, args ...interface{}) error {
+	var model T
+	return r.db.Where(query, args...).Delete(&model).Error
+}
+
 // Count counts records matching the given conditions
 func (r *Repository[T]) Count(count *int64, query interface{}, args ...interface{}) error {
 	db := r.db // Use the wrapper directly, not the internal r.db.DB field

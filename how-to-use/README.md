@@ -165,6 +165,12 @@ if err := userRepo.Update(&foundUser); err != nil {
 if err := userRepo.Delete(&foundUser); err != nil {
     log.Printf("Failed to delete user: %v", err)
 }
+
+// Delete users by condition
+if err := userRepo.DeleteWhere("age > ?", 30); err != nil {
+    log.Printf("Failed to delete users over 30: %v", err)
+}
+
 ```
 
 ### Advanced Queries
@@ -193,6 +199,7 @@ var count int64
 if err := userRepo.Count(&count, "status = ?", "active"); err != nil {
     log.Printf("Failed to count users: %v", err)
 }
+
 ```
 
 ## Pagination
